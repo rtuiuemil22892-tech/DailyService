@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 )
 
 func main() {
@@ -35,6 +36,12 @@ func tasksHand(w http.ResponseWriter, r *http.Request) {
 		var task Task
 		if err := json.NewDecoder(r.Body).Decode(&task); err != nil {
 			http.Error(w, `{"error":"invalid JSON"}`, http.StatusBadRequest)
+			return
+		}
+
+		task.Title = strings.TrimSpace(task.Title)
+		if task.Title == "" {
+			http.Error(w, "title is required", http.StatusBadRequest)
 			return
 		}
 
